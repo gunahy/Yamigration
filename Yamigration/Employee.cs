@@ -1,7 +1,7 @@
 
 namespace Yamigration
 {
-    class Employee
+    public class Employee
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

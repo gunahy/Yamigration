@@ -40,7 +40,7 @@ namespace Yamigration
             password.Append(upperCase[random.Next(upperCase.Length)]);
             password.Append(lowerCase[random.Next(lowerCase.Length)]);
             password.Append(digits[random.Next(digits.Length)]);
-            password.Append(specialChars[random.Next(specialChars.Length)]);
+            //password.Append(specialChars[random.Next(specialChars.Length)]);
 
             // Заполняем оставшуюся часть пароля случайными символами из всех категорий
             string allChars = upperCase + lowerCase + digits + specialChars;

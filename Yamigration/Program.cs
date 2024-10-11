@@ -13,7 +13,7 @@ namespace Yamigration
 
             try
             {
-                IEmployeeLoader employeeLoader = null;
+                IEmployeeLoader? employeeLoader = null;
 
                 // Проверяем, передан ли параметр -f для загрузки файла
                 if (args.Length >= 2 && args[0] == "-f")
@@ -53,40 +53,32 @@ namespace Yamigration
                 // Загрузка списка сотрудников
                 List<Employee> employees = employeeLoader.LoadEmployees();
 
-                // Получаем путь к папке загрузок
-                string downloadsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-                string filePathOutput = Path.Combine(downloadsPath, "migration.csv");
-
-                // Список для хранения созданных логинов
+                // Генерация логинов и паролей
                 List<string> createdLogins = new List<string>();
+                string filePathOutput = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "migration.csv");
 
-                // Открываем файл для записи
                 using (StreamWriter writer = new StreamWriter(filePathOutput))
                 {
-                    // Записываем заголовок
                     writer.WriteLine("\"login\";\"password\";\"first_name\";\"last_name\";\"middle_name\";\"gender\";\"birthday\";\"language\"");
-
-                    // Обработка каждого сотрудника
                     foreach (var employee in employees)
                     {
                         employee.GenerateLogin(formatChoice);
 
+                        // Проверка, что Login не пустой
+                        if (string.IsNullOrWhiteSpace(employee.Login))
+                        {
+                            throw new InvalidInputException("Ошибка: Логин не может быть NULL.");
+                        }
+
+                        // Запись данных в файл
                         writer.WriteLine($"\"{employee.Login}\";\"{employee.Password}\";\"{employee.FirstName}\";\"{employee.LastName}\";\"{employee.MiddleName}\";\"{employee.Gender}\";\"01.01.2019\";\"ru\"");
-
                         createdLogins.Add(employee.Login);
-                    }
-                }
 
-                // Вывод сообщения о созданных аккаунтах
-                if (createdLogins.Count > 0)
-                {
-                    Console.WriteLine("Созданы аккаунты:");
-                    foreach (var login in createdLogins)
-                    {
-                        Console.WriteLine($"{login}@ms11.ru");
+                        // Вывод логина и пароля на экран
+                        Console.WriteLine($"Создан аккаунт {employee.Login}@ms11.ru\nПароль {employee.Password}");
                     }
-                    Console.WriteLine($"Файл сохранен в {filePathOutput}");
                 }
+                Console.WriteLine($"Файл сохранен в {filePathOutput}");
             }
             catch (InvalidInputException ex)
             {
